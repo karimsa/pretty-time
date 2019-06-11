@@ -14,7 +14,19 @@ describe('pretty', function() {
     assert.throws(() => pretty([0,1,2]), /expected an array from process\.hrtime\(\)/);
   });
 
-  it('should support hrtime:', function() {
+  it('should pretty print time differences', done => {
+    const t = pretty.start();
+    setTimeout(() => {
+      try {
+        assert(/^[0-9]+s$/.test(t.end()));
+        done();
+      } catch (err) {
+        done(err);
+      }
+    }, 1100)
+  });
+
+  it('should support hrtime:', function () {
     const start = process.hrtime();
     const time = process.hrtime(start);
     assert(typeof pretty(time) === 'string');
