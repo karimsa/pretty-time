@@ -9,7 +9,7 @@
 
 const utils = require('./utils');
 
-module.exports = (time, smallest, digits) => {
+function prettyTime(time, smallest, digits) {
   const isNumber = /^[0-9]+$/.test(time);
   if (!isNumber && !Array.isArray(time)) {
     throw new TypeError('expected an array or number in nanoseconds');
@@ -33,7 +33,7 @@ module.exports = (time, smallest, digits) => {
 
     if (smallest && utils.isSmallest(uom, smallest)) {
       inc = utils.round(inc, digits);
-      if (prev && (inc === (prev / step))) --inc;
+      if (prev && (inc === (prev / step)))--inc;
       res += inc + uom;
       return res.trim();
     }
@@ -53,4 +53,16 @@ module.exports = (time, smallest, digits) => {
   }
 
   return res.trim();
+}
+
+prettyTime.start = function() {
+  const startTime = process.hrtime();
+  return {
+    end: unit => prettyTime(process.hrtime(startTime), unit)
+  };
 };
+
+const timeStart = prettyTime.start();
+prettyTime.uptime = unit => timeStart.end(unit);
+
+module.exports = prettyTime;
